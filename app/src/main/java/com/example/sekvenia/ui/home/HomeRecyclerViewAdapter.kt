@@ -4,13 +4,20 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sekvenia.databinding.ItemHomeRecyclerViewBinding
+import com.example.sekvenia.domain.entity.Film
 
 class HomeRecyclerViewAdapter : RecyclerView.Adapter<HomeRecyclerViewAdapter.ViewHolder>() {
 
 
     //    TODO("Datalist")
-    private var dataList: MutableList<String> = mutableListOf("1", "12", "123")
+    private var dataList: MutableList<Film> = mutableListOf()
     lateinit var listener: OnItemClickListener
+
+    fun setUpdatedData(dataList: List<Film>) {
+        this.dataList.clear()
+        this.dataList.addAll(dataList)
+        notifyDataSetChanged()
+    }
 
     interface OnItemClickListener {
         fun onItemClick(position: Int)
@@ -41,7 +48,7 @@ class HomeRecyclerViewAdapter : RecyclerView.Adapter<HomeRecyclerViewAdapter.Vie
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(dataList[position])
+        holder.bind(dataList[position].name)
     }
 
     override fun getItemCount() = dataList.size

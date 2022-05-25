@@ -1,4 +1,4 @@
-package com.test.project.data.remote.network
+package com.example.sekvenia.data.remote.network
 
 import retrofit2.Retrofit
 

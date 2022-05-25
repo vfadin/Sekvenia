@@ -1,4 +1,4 @@
-package com.test.project.data.remote.network
+package com.example.sekvenia.data.remote.network
 
 import com.example.sekvenia.data.network.EmptyBodyInterceptor
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -6,7 +6,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
-
 
 class Network(
     private val interceptor: SupportInterceptor
@@ -20,7 +19,6 @@ class Network(
         .build()
     }
 
-
     private fun buildClient() : OkHttpClient  {
         return  OkHttpClient.Builder()
             .addInterceptor(interceptor)
@@ -30,6 +28,5 @@ class Network(
             .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
             .build()
     }
-
 }
 
