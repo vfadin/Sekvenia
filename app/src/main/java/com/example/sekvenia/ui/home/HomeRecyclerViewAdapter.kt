@@ -2,20 +2,38 @@ package com.example.sekvenia.ui.home
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.sekvenia.databinding.ItemHomeRecyclerViewBinding
-import com.example.sekvenia.domain.entity.Film
+import com.example.sekvenia.R
+import com.example.sekvenia.databinding.ItemHomeFilmBinding
+import com.example.sekvenia.databinding.ItemHomeGenreBinding
+import com.example.sekvenia.databinding.ItemHomeTitleBinding
+import com.example.sekvenia.domain.entity.*
 
-class HomeRecyclerViewAdapter : RecyclerView.Adapter<HomeRecyclerViewAdapter.ViewHolder>() {
-
+class HomeRecyclerViewAdapter : RecyclerView.Adapter<HomeRecyclerViewHolder>() {
 
     //    TODO("Datalist")
-    private var dataList: MutableList<Film> = mutableListOf()
+    private var dataList: MutableList<HomeRecyclerViewItem> = mutableListOf()
+    private var genreSet = mutableSetOf<String>()
     lateinit var listener: OnItemClickListener
+
+    fun getGenresCount() = genreSet.size
 
     fun setUpdatedData(dataList: List<Film>) {
         this.dataList.clear()
-        this.dataList.addAll(dataList)
+        dataList.map {
+            genreSet.addAll(it.genres)
+        }
+        with(this.dataList) {
+            add("Жанры".toHomeRecyclerViewItemTitle())
+            addAll(genreSet.map {
+                it.toHomeRecyclerViewItemGenre()
+            })
+            add("Фильмы".toHomeRecyclerViewItemTitle())
+            addAll(dataList.sortedBy { it.localized_name }.map {
+                it.toHomeRecyclerViewItemFilm()
+            })
+        }
         notifyDataSetChanged()
     }
 
@@ -27,30 +45,58 @@ class HomeRecyclerViewAdapter : RecyclerView.Adapter<HomeRecyclerViewAdapter.Vie
         this.listener = listener
     }
 
-    inner class ViewHolder(private val binding: ItemHomeRecyclerViewBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(data: String) {
-            binding.textViewTitle.text = data
-        }
-    }
-
     override fun onCreateViewHolder(
         viewGroup: ViewGroup,
         viewType: Int
-    ): ViewHolder {
-        return ViewHolder(
-            ItemHomeRecyclerViewBinding.inflate(
-                LayoutInflater.from(viewGroup.context),
-                viewGroup,
-                false
+    ): HomeRecyclerViewHolder {
+        return when (viewType) {
+            R.layout.item_home_title -> HomeRecyclerViewHolder.TitleViewHolder(
+                ItemHomeTitleBinding.inflate(
+                    LayoutInflater.from(viewGroup.context),
+                    viewGroup,
+                    false
+                )
             )
-        )
+            R.layout.item_home_film -> HomeRecyclerViewHolder.FilmViewHolder(
+                ItemHomeFilmBinding.inflate(
+                    LayoutInflater.from(viewGroup.context),
+                    viewGroup,
+                    false
+                )
+            )
+            R.layout.item_home_genre -> HomeRecyclerViewHolder.GenreViewHolder(
+                ItemHomeGenreBinding.inflate(
+                    LayoutInflater.from(viewGroup.context),
+                    viewGroup,
+                    false
+                )
+            )
+            else -> {
+                throw IllegalArgumentException("Invalid ViewType Provided")
+            }
+        }
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(dataList[position].name)
+    override fun onBindViewHolder(holder: HomeRecyclerViewHolder, position: Int) {
+        when (holder) {
+            is HomeRecyclerViewHolder.GenreViewHolder ->
+                holder.bind(dataList[position] as HomeRecyclerViewItem.Genre)
+            is HomeRecyclerViewHolder.FilmViewHolder -> {
+                holder.bind(dataList[position] as HomeRecyclerViewItem.Film)
+
+            }
+            is HomeRecyclerViewHolder.TitleViewHolder ->
+                holder.bind(dataList[position] as HomeRecyclerViewItem.Title)
+        }
     }
 
     override fun getItemCount() = dataList.size
 
+    override fun getItemViewType(position: Int): Int {
+        return when (dataList[position]) {
+            is HomeRecyclerViewItem.Film -> R.layout.item_home_film
+            is HomeRecyclerViewItem.Genre -> R.layout.item_home_genre
+            is HomeRecyclerViewItem.Title -> R.layout.item_home_title
+        }
+    }
 }

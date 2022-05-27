@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sekvenia.R
 import com.example.sekvenia.databinding.FragmentHomeBinding
@@ -31,7 +32,16 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding?.apply {
             with(recyclerViewFilms){
                 adapter = recyclerViewAdapter
-                layoutManager = LinearLayoutManager(requireContext())
+                val layoutManager = GridLayoutManager(requireContext(),2)
+                layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int {
+                        if (position < recyclerViewAdapter.getGenresCount() + 2) {
+                            return 2
+                        }
+                        return 1
+                    }
+                }
+                this.layoutManager = layoutManager
             }
         }
     }
