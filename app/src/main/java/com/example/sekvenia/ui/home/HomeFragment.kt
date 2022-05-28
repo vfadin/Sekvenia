@@ -45,10 +45,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         when (viewType) {
                             R.layout.item_home_film -> {
                                 val bundle = Bundle()
-                                bundle.putInt(
-                                    "position",
-                                    position - recyclerViewAdapter.getGenresCount()
-                                            - TITLES_BEFORE_FILMS
+                                bundle.putString(
+                                    "localized_name",
+                                    recyclerViewAdapter.getFilmName(
+                                        position -
+                                                TITLES_BEFORE_FILMS -
+                                                recyclerViewAdapter.getGenresCount()
+                                    )?.let {
+                                        it.localized_name
+                                    }
                                 )
                                 findNavController().navigate(
                                     R.id.action_homeFragment_to_detailedFilmFragment,

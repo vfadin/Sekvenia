@@ -20,12 +20,16 @@ class DetailedFilmFragment : Fragment(R.layout.fragment_detailed_film) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val filmIndex = arguments?.getInt("position") ?: 0
+        val filmName = arguments?.getString("localized_name") ?: ""
+        println(filmName)
         binding = FragmentDetailedFilmBinding.bind(view)
         viewLifecycleOwner.lifecycle.coroutineScope.launch {
-            presenter.filmStateFlow.collect {
-                it.getOrNull(filmIndex)?.let { film ->
-                    bindUi(film)
+            presenter.filmStateFlow.collect { list ->
+                list.find {
+                    it.localized_name == filmName
+                }?.let {
+
+                    bindUi(it)
                 }
             }
         }

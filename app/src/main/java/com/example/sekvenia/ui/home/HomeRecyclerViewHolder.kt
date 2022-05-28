@@ -38,32 +38,49 @@ sealed class HomeRecyclerViewHolder(binding: ViewBinding) : RecyclerView.ViewHol
 
     class GenreViewHolder(private val binding: ItemHomeGenreBinding) :
         HomeRecyclerViewHolder(binding) {
+
+        fun setSelectedBackground() {
+            with(binding) {
+                with(cardView) {
+                    isSelected = true
+                    setCardBackgroundColor(context.resources.getColor(R.color.purple_200))
+                    textViewGenre.setBackgroundColor(
+                        context.resources.getColor(R.color.purple_200)
+                    )
+                }
+            }
+        }
+
+        fun setDefaultBackground(genre: HomeRecyclerViewItem.ItemGenre) {
+            with(binding) {
+                with(cardView) {
+                    isSelected = false
+                    setCardBackgroundColor(context.resources.getColor(R.color.dark_gray))
+                    textViewGenre.setBackgroundColor(
+                        context.resources.getColor(R.color.dark_gray)
+                    )
+                }
+            }
+        }
+
         fun bind(
             genre: HomeRecyclerViewItem.ItemGenre,
             listener: HomeRecyclerViewAdapter.OnItemClickListener
-        ) {
+        ): Int? {
             with(binding) {
                 textViewGenre.text = genre.title
                 itemView.setOnClickListener {
-                    with(cardView) {
-                        if (isSelected) {
-                            setCardBackgroundColor(context.resources.getColor(R.color.dark_gray))
-                            textViewGenre.setBackgroundColor(
-                                context.resources.getColor(R.color.dark_gray)
-                            )
-                            isSelected = false
-                        } else {
-                            listener.onItemClick(adapterPosition, R.layout.item_home_genre)
-                            isSelected = true
-                            setCardBackgroundColor(context.resources.getColor(R.color.purple_200))
-                            textViewGenre.setBackgroundColor(
-                                context.resources.getColor(R.color.purple_200)
-                            )
-                        }
-                    }
-
+                    if (!cardView.isSelected) {
+                        setSelectedBackground()
+                        listener.onItemClick(
+                            adapterPosition,
+                            R.layout.item_home_genre
+                        )
+                    } else setDefaultBackground(genre)
                 }
             }
+            println("null")
+            return null
         }
     }
 }
