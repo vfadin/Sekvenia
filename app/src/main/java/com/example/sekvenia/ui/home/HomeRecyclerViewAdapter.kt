@@ -10,12 +10,21 @@ import com.example.sekvenia.databinding.ItemHomeGenreBinding
 import com.example.sekvenia.databinding.ItemHomeTitleBinding
 import com.example.sekvenia.domain.entity.*
 
-class HomeRecyclerViewAdapter : RecyclerView.Adapter<HomeRecyclerViewHolder>() {
+class HomeRecyclerViewAdapter(
+    private val layoutManager: GridLayoutManager
+) : RecyclerView.Adapter<HomeRecyclerViewHolder>() {
 
-    //    TODO("Datalist")
     private var dataList: MutableList<HomeRecyclerViewItem> = mutableListOf()
     private var genreSet = mutableSetOf<String>()
-    lateinit var listener: OnItemClickListener
+    private lateinit var listener: OnItemClickListener
+
+    interface OnItemClickListener {
+        fun onItemClick(position: Int, viewType: Int)
+    }
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        this.listener = listener
+    }
 
     fun getGenresCount() = genreSet.size
 
@@ -30,19 +39,11 @@ class HomeRecyclerViewAdapter : RecyclerView.Adapter<HomeRecyclerViewHolder>() {
                 it.toHomeRecyclerViewItemGenre()
             })
             add("Фильмы".toHomeRecyclerViewItemTitle())
-            addAll(dataList.sortedBy { it.localized_name }.map {
+            addAll(dataList.map {
                 it.toHomeRecyclerViewItemFilm()
             })
         }
         notifyDataSetChanged()
-    }
-
-    interface OnItemClickListener {
-        fun onItemClick(position: Int)
-    }
-
-    fun setOnItemClickListener(listener: OnItemClickListener) {
-        this.listener = listener
     }
 
     override fun onCreateViewHolder(
@@ -78,15 +79,15 @@ class HomeRecyclerViewAdapter : RecyclerView.Adapter<HomeRecyclerViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: HomeRecyclerViewHolder, position: Int) {
+        setSpanCount()
         when (holder) {
             is HomeRecyclerViewHolder.GenreViewHolder ->
-                holder.bind(dataList[position] as HomeRecyclerViewItem.Genre)
+                holder.bind(dataList[position] as HomeRecyclerViewItem.ItemGenre, listener)
             is HomeRecyclerViewHolder.FilmViewHolder -> {
-                holder.bind(dataList[position] as HomeRecyclerViewItem.Film)
-
+                holder.bind(dataList[position] as HomeRecyclerViewItem.ItemFilm, listener)
             }
             is HomeRecyclerViewHolder.TitleViewHolder ->
-                holder.bind(dataList[position] as HomeRecyclerViewItem.Title)
+                holder.bind(dataList[position] as HomeRecyclerViewItem.ItemTitle)
         }
     }
 
@@ -94,9 +95,20 @@ class HomeRecyclerViewAdapter : RecyclerView.Adapter<HomeRecyclerViewHolder>() {
 
     override fun getItemViewType(position: Int): Int {
         return when (dataList[position]) {
-            is HomeRecyclerViewItem.Film -> R.layout.item_home_film
-            is HomeRecyclerViewItem.Genre -> R.layout.item_home_genre
-            is HomeRecyclerViewItem.Title -> R.layout.item_home_title
+            is HomeRecyclerViewItem.ItemFilm -> R.layout.item_home_film
+            is HomeRecyclerViewItem.ItemGenre -> R.layout.item_home_genre
+            is HomeRecyclerViewItem.ItemTitle -> R.layout.item_home_title
+        }
+    }
+
+    private fun setSpanCount() {
+        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                if (position < getGenresCount() + 2) {
+                    return 2
+                }
+                return 1
+            }
         }
     }
 }

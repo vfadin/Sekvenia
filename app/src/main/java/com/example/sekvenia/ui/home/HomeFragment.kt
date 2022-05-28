@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sekvenia.R
 import com.example.sekvenia.databinding.FragmentHomeBinding
 import kotlinx.coroutines.launch
@@ -15,7 +15,7 @@ import org.koin.core.parameter.parametersOf
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private var binding: FragmentHomeBinding? = null
-    private val recyclerViewAdapter = HomeRecyclerViewAdapter()
+    private lateinit var recyclerViewAdapter: HomeRecyclerViewAdapter
 
     private val presenter: HomePresenter by inject { parametersOf(this) }
 
@@ -24,24 +24,32 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding = FragmentHomeBinding.bind(view)
         bindUi()
         viewLifecycleOwner.lifecycleScope.launch {
-            recyclerViewAdapter.setUpdatedData(presenter.getFilms())
+            presenter.filmStateFlow.collect {
+                recyclerViewAdapter.setUpdatedData(it)
+            }
         }
     }
 
     private fun bindUi() {
         binding?.apply {
-            with(recyclerViewFilms){
+            with(recyclerViewHomeFilms) {
+                val layoutManager = GridLayoutManager(requireContext(), 2)
+                recyclerViewAdapter = HomeRecyclerViewAdapter(layoutManager)
                 adapter = recyclerViewAdapter
-                val layoutManager = GridLayoutManager(requireContext(),2)
-                layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                    override fun getSpanSize(position: Int): Int {
-                        if (position < recyclerViewAdapter.getGenresCount() + 2) {
-                            return 2
-                        }
-                        return 1
-                    }
-                }
                 this.layoutManager = layoutManager
+                recyclerViewAdapter.setOnItemClickListener(object :
+                    HomeRecyclerViewAdapter.OnItemClickListener {
+                    override fun onItemClick(position: Int, viewType: Int) {
+                        if (viewType == R.layout.item_home_film) {
+                            val bundle = Bundle()
+                            bundle.putInt("position", position)
+                            findNavController().navigate(
+                                R.id.action_homeFragment_to_detailedFilmFragment,
+                                bundle
+                            )
+                        }
+                    }
+                })
             }
         }
     }

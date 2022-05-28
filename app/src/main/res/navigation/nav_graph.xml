@@ -9,5 +9,14 @@
         android:id="@+id/homeFragment"
         android:name="com.example.sekvenia.ui.home.HomeFragment"
         android:label="Главная"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_detailedFilmFragment"
+            app:destination="@id/detailedFilmFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailedFilmFragment"
+        android:name="com.example.sekvenia.ui.home.DetailedFilmFragment"
+        android:label="fragment_detailed_film"
+        tools:layout="@layout/fragment_detailed_film" />
 </navigation>
