@@ -14,6 +14,8 @@ import org.koin.core.parameter.parametersOf
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
+    private val TITLES_BEFORE_FILMS = 2
+    private val TITLES_BEFORE_GENRES = 1
     private var binding: FragmentHomeBinding? = null
     private lateinit var recyclerViewAdapter: HomeRecyclerViewAdapter
 
@@ -40,13 +42,22 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 recyclerViewAdapter.setOnItemClickListener(object :
                     HomeRecyclerViewAdapter.OnItemClickListener {
                     override fun onItemClick(position: Int, viewType: Int) {
-                        if (viewType == R.layout.item_home_film) {
-                            val bundle = Bundle()
-                            bundle.putInt("position", position)
-                            findNavController().navigate(
-                                R.id.action_homeFragment_to_detailedFilmFragment,
-                                bundle
-                            )
+                        when (viewType) {
+                            R.layout.item_home_film -> {
+                                val bundle = Bundle()
+                                bundle.putInt(
+                                    "position",
+                                    position - recyclerViewAdapter.getGenresCount()
+                                            - TITLES_BEFORE_FILMS
+                                )
+                                findNavController().navigate(
+                                    R.id.action_homeFragment_to_detailedFilmFragment,
+                                    bundle
+                                )
+                            }
+                            R.layout.item_home_genre -> {
+                                recyclerViewAdapter.setGenreFilter(position - TITLES_BEFORE_GENRES)
+                            }
                         }
                     }
                 })

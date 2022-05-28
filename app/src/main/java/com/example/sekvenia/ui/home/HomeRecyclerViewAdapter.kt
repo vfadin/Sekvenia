@@ -2,6 +2,7 @@ package com.example.sekvenia.ui.home
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sekvenia.R
@@ -14,9 +15,11 @@ class HomeRecyclerViewAdapter(
     private val layoutManager: GridLayoutManager
 ) : RecyclerView.Adapter<HomeRecyclerViewHolder>() {
 
-    private var dataList: MutableList<HomeRecyclerViewItem> = mutableListOf()
+    private var dataList = mutableListOf<HomeRecyclerViewItem>()
+    private var filmList = mutableListOf<Film>()
     private var genreSet = mutableSetOf<String>()
     private lateinit var listener: OnItemClickListener
+    lateinit var diffUtils: HomeDiffUtils
 
     interface OnItemClickListener {
         fun onItemClick(position: Int, viewType: Int)
@@ -26,14 +29,26 @@ class HomeRecyclerViewAdapter(
         this.listener = listener
     }
 
+    fun clearGenreSelect(position: Int) {
+
+    }
+
     fun getGenresCount() = genreSet.size
 
-    fun setUpdatedData(dataList: List<Film>) {
-        this.dataList.clear()
-        dataList.map {
-            genreSet.addAll(it.genres)
+    fun setGenreFilter(position: Int) {
+        val result = mutableListOf<Film>()
+        println(genreSet.elementAtOrNull(position))
+        filmList.map { film ->
+            if (film.genres.contains(genreSet.elementAtOrNull(position))) {
+                result.add(film)
+            }
         }
-        with(this.dataList) {
+        formDataList(result)
+    }
+
+    private fun formDataList(dataList: List<Film>) {
+        val newDataList = mutableListOf<HomeRecyclerViewItem>()
+        with(newDataList) {
             add("Жанры".toHomeRecyclerViewItemTitle())
             addAll(genreSet.map {
                 it.toHomeRecyclerViewItemGenre()
@@ -43,7 +58,18 @@ class HomeRecyclerViewAdapter(
                 it.toHomeRecyclerViewItemFilm()
             })
         }
-        notifyDataSetChanged()
+        diffUtils = HomeDiffUtils(this.dataList, newDataList)
+        val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(diffUtils)
+        this.dataList = newDataList
+        diffResult.dispatchUpdatesTo(this)
+    }
+
+    fun setUpdatedData(dataList: List<Film>) {
+        dataList.map {
+            filmList.add(it)
+            genreSet.addAll(it.genres)
+        }
+        formDataList(dataList)
     }
 
     override fun onCreateViewHolder(
@@ -83,9 +109,8 @@ class HomeRecyclerViewAdapter(
         when (holder) {
             is HomeRecyclerViewHolder.GenreViewHolder ->
                 holder.bind(dataList[position] as HomeRecyclerViewItem.ItemGenre, listener)
-            is HomeRecyclerViewHolder.FilmViewHolder -> {
+            is HomeRecyclerViewHolder.FilmViewHolder ->
                 holder.bind(dataList[position] as HomeRecyclerViewItem.ItemFilm, listener)
-            }
             is HomeRecyclerViewHolder.TitleViewHolder ->
                 holder.bind(dataList[position] as HomeRecyclerViewItem.ItemTitle)
         }

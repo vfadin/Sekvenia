@@ -16,6 +16,7 @@ class HomePresenter(
     private val _filmState = MutableStateFlow<List<Film>?>(null)
     val filmStateFlow = _filmState.asStateFlow().filterNotNull()
 
+
     init {
         getFilms()
     }

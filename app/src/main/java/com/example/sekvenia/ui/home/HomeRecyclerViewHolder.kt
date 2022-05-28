@@ -45,7 +45,6 @@ sealed class HomeRecyclerViewHolder(binding: ViewBinding) : RecyclerView.ViewHol
             with(binding) {
                 textViewGenre.text = genre.title
                 itemView.setOnClickListener {
-                    listener.onItemClick(adapterPosition, R.layout.item_home_genre)
                     with(cardView) {
                         if (isSelected) {
                             setCardBackgroundColor(context.resources.getColor(R.color.dark_gray))
@@ -54,6 +53,7 @@ sealed class HomeRecyclerViewHolder(binding: ViewBinding) : RecyclerView.ViewHol
                             )
                             isSelected = false
                         } else {
+                            listener.onItemClick(adapterPosition, R.layout.item_home_genre)
                             isSelected = true
                             setCardBackgroundColor(context.resources.getColor(R.color.purple_200))
                             textViewGenre.setBackgroundColor(
@@ -61,6 +61,7 @@ sealed class HomeRecyclerViewHolder(binding: ViewBinding) : RecyclerView.ViewHol
                             )
                         }
                     }
+
                 }
             }
         }

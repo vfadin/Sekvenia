@@ -2,16 +2,16 @@ package com.example.sekvenia.domain.entity
 
 sealed class HomeRecyclerViewItem {
 
-    class ItemTitle(
+    data class ItemTitle(
         val text: String
     ) : HomeRecyclerViewItem()
 
-    class ItemFilm(
+    data class ItemFilm(
         val title: String,
         val imageUrl: String
     ) : HomeRecyclerViewItem()
 
-    class ItemGenre(
+    data class ItemGenre(
         val title: String,
     ) : HomeRecyclerViewItem()
 
