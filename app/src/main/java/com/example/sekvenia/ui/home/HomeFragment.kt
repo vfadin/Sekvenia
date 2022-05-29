@@ -32,14 +32,13 @@ class HomeFragment : MvpAppCompatFragment(R.layout.fragment_home), IHomeView {
 
     override fun setData() {
         viewLifecycleOwner.lifecycleScope.launch {
-            presenter.filmStateFlow.collect {
+            presenter.requestStateFlow.collect {
                 recyclerViewAdapter.setUpdatedData(
                     presenter.filteredFilmList,
                     presenter.genreSet
                 )
             }
         }
-
     }
 
     override fun setGenreFilter(position: Int) {
@@ -80,6 +79,13 @@ class HomeFragment : MvpAppCompatFragment(R.layout.fragment_home), IHomeView {
                         }
                     }
                 })
+            }
+            swipeRefreshLayoutHome.setOnRefreshListener {
+                presenter.getFilms()
+                recyclerViewAdapter.redrawPrevSelectedGenre(presenter.genreSelected)
+                presenter.genreSelected = -1
+                recyclerViewAdapter.selectedGenrePosition = -1
+                swipeRefreshLayoutHome.isRefreshing = false
             }
         }
         setData()

@@ -29,7 +29,7 @@ class HomeRecyclerViewAdapter(
         this.listener = listener
     }
 
-    private fun redrawPrevSelectedGenre(position: Int) {
+    fun redrawPrevSelectedGenre(position: Int) {
         selectedGenrePosition = if (selectedGenrePosition == -1) {
             position
         } else {

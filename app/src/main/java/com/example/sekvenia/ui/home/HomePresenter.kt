@@ -16,8 +16,8 @@ class HomePresenter(
 ) : MvpPresenter<IHomeView>() {
 
     private val TITLES_BEFORE_GENRES = 1
-    private val _filmState = MutableStateFlow<List<Film>?>(null)
-    val filmStateFlow = _filmState.asStateFlow().filterNotNull()
+    private val _requestState = MutableStateFlow<Byte?>(null)
+    val requestStateFlow = _requestState.asStateFlow().filterNotNull()
 
     private val filmList = mutableListOf<Film>()
     val genreSet = mutableSetOf<String>()
@@ -40,9 +40,10 @@ class HomePresenter(
         return filteredFilmList
     }
 
-    private fun getFilms() {
+    fun getFilms() {
         presenterScope.launch {
             filmList.clear()
+            filteredFilmList.clear()
             val result = homeRepo.getFilms().sortedBy {
                 it.localized_name
             }
@@ -53,7 +54,8 @@ class HomePresenter(
                     genreSet.add(it)
                 }
             }
-            _filmState.emit(result)
+            _requestState.value = null
+            _requestState.emit(1)
         }
     }
 }
