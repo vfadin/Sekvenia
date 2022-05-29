@@ -36,7 +36,7 @@ class HomeFragment : MvpAppCompatFragment(R.layout.fragment_home), IHomeView {
         viewLifecycleOwner.lifecycleScope.launch {
             presenter.filmStateFlow.collect {
                 recyclerViewAdapter.setUpdatedData(
-                    it,
+                    presenter.filteredFilmList,
                     presenter.genreSet
                 )
             }
@@ -58,6 +58,7 @@ class HomeFragment : MvpAppCompatFragment(R.layout.fragment_home), IHomeView {
                 val layoutManager = GridLayoutManager(requireContext(), 2)
                 recyclerViewAdapter = HomeRecyclerViewAdapter(layoutManager)
                 adapter = recyclerViewAdapter
+                recyclerViewAdapter.selectedGenrePosition = presenter.genreSelected
                 this.layoutManager = layoutManager
                 recyclerViewAdapter.setOnItemClickListener(object :
                     HomeRecyclerViewAdapter.OnItemClickListener {

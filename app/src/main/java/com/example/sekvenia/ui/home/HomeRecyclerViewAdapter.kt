@@ -15,9 +15,8 @@ class HomeRecyclerViewAdapter(
     private val layoutManager: GridLayoutManager
 ) : RecyclerView.Adapter<HomeRecyclerViewHolder>() {
 
-    private val TITLES_BEFORE_GENRES = 1
     private var dataList = mutableListOf<HomeRecyclerViewItem>()
-    private var selectedGenrePosition = -1
+    var selectedGenrePosition = -1
     private lateinit var listener: OnItemClickListener
     private lateinit var diffUtils: HomeDiffUtils
     private var genresCount = 0
@@ -103,11 +102,12 @@ class HomeRecyclerViewAdapter(
         setSpanCount()
         when (holder) {
             is HomeRecyclerViewHolder.GenreViewHolder -> {
-                if (position != selectedGenrePosition) {
-                    holder.bind(
-                        dataList[position] as HomeRecyclerViewItem.ItemGenre,
-                        listener
-                    )
+                holder.bind(
+                    dataList[position] as HomeRecyclerViewItem.ItemGenre,
+                    listener
+                )
+                if (position == selectedGenrePosition) {
+                    holder.setSelectedBackground()
                 }
             }
             is HomeRecyclerViewHolder.FilmViewHolder ->

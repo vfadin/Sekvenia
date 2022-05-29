@@ -19,9 +19,10 @@ class HomePresenter(
     private val _filmState = MutableStateFlow<List<Film>?>(null)
     val filmStateFlow = _filmState.asStateFlow().filterNotNull()
 
-    val filmList = mutableListOf<Film>()
+    private val filmList = mutableListOf<Film>()
     val genreSet = mutableSetOf<String>()
     var filteredFilmList = mutableListOf<Film>()
+    var genreSelected: Int = -1
 
     init {
         viewState.bindUi()
@@ -29,6 +30,7 @@ class HomePresenter(
     }
 
     fun getFilteredFilmList(position: Int): MutableList<Film> {
+        genreSelected = position
         filteredFilmList.clear()
         filmList.map { film ->
             if (film.genres.contains(genreSet.elementAtOrNull(position - TITLES_BEFORE_GENRES))) {
@@ -38,7 +40,7 @@ class HomePresenter(
         return filteredFilmList
     }
 
-    fun getFilms() {
+    private fun getFilms() {
         presenterScope.launch {
             filmList.clear()
             val result = homeRepo.getFilms().sortedBy {
@@ -46,11 +48,11 @@ class HomePresenter(
             }
             result.map { film ->
                 filmList.add(film)
+                filteredFilmList.add(film)
                 film.genres.map {
                     genreSet.add(it)
                 }
             }
-            filteredFilmList = filmList
             _filmState.emit(result)
         }
     }
