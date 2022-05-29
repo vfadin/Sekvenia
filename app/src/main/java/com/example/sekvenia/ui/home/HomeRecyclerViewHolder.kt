@@ -1,5 +1,6 @@
 package com.example.sekvenia.ui.home
 
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import coil.load
@@ -39,25 +40,25 @@ sealed class HomeRecyclerViewHolder(binding: ViewBinding) : RecyclerView.ViewHol
     class GenreViewHolder(private val binding: ItemHomeGenreBinding) :
         HomeRecyclerViewHolder(binding) {
 
-        fun setSelectedBackground() {
+        private fun setSelectedBackground() {
             with(binding) {
                 with(cardView) {
                     isSelected = true
-                    setCardBackgroundColor(context.resources.getColor(R.color.purple_200))
+                    setCardBackgroundColor(ContextCompat.getColor(context, R.color.purple_200))
                     textViewGenre.setBackgroundColor(
-                        context.resources.getColor(R.color.purple_200)
+                        ContextCompat.getColor(context, R.color.purple_200)
                     )
                 }
             }
         }
 
-        fun setDefaultBackground(genre: HomeRecyclerViewItem.ItemGenre) {
+        private fun setDefaultBackground() {
             with(binding) {
                 with(cardView) {
                     isSelected = false
-                    setCardBackgroundColor(context.resources.getColor(R.color.dark_gray))
+                    setCardBackgroundColor(ContextCompat.getColor(context, R.color.gray))
                     textViewGenre.setBackgroundColor(
-                        context.resources.getColor(R.color.dark_gray)
+                        ContextCompat.getColor(context, R.color.gray)
                     )
                 }
             }
@@ -66,8 +67,9 @@ sealed class HomeRecyclerViewHolder(binding: ViewBinding) : RecyclerView.ViewHol
         fun bind(
             genre: HomeRecyclerViewItem.ItemGenre,
             listener: HomeRecyclerViewAdapter.OnItemClickListener
-        ): Int? {
+        ) {
             with(binding) {
+                setDefaultBackground()
                 textViewGenre.text = genre.title
                 itemView.setOnClickListener {
                     if (!cardView.isSelected) {
@@ -76,11 +78,9 @@ sealed class HomeRecyclerViewHolder(binding: ViewBinding) : RecyclerView.ViewHol
                             adapterPosition,
                             R.layout.item_home_genre
                         )
-                    } else setDefaultBackground(genre)
+                    }
                 }
             }
-            println("null")
-            return null
         }
     }
 }

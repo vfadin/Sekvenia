@@ -5,5 +5,5 @@ import moxy.viewstate.strategy.alias.AddToEndSingle
 
 interface IHomeView : MvpView {
     @AddToEndSingle
-    fun show()
+    fun bindUi()
 }

@@ -12,8 +12,7 @@ sealed class HomeRecyclerViewItem {
     ) : HomeRecyclerViewItem()
 
     data class ItemGenre(
-        val title: String,
-        var isSelected: Boolean = false
+        val title: String
     ) : HomeRecyclerViewItem()
 
 }
@@ -29,6 +28,5 @@ fun String.toHomeRecyclerViewItemTitle() = HomeRecyclerViewItem.ItemTitle(
 )
 
 fun String.toHomeRecyclerViewItemGenre() = HomeRecyclerViewItem.ItemGenre(
-    title = this,
-    isSelected = false
+    title = this
 )

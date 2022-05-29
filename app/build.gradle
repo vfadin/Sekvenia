@@ -36,12 +36,12 @@ android {
 }
 
 dependencies {
-
     implementation("io.coil-kt:coil:2.1.0")
 
-    implementation "com.github.moxy-community:moxy-ktx:2.2.2"
-    implementation "com.github.moxy-community:moxy:2.2.2"
-    kapt "com.github.moxy-community:moxy-compiler:2.2.2"
+    implementation("com.github.moxy-community:moxy:2.2.2")
+    implementation("com.github.moxy-community:moxy-androidx:2.2.2")
+    implementation("com.github.moxy-community:moxy-ktx:2.2.2")
+    kapt("com.github.moxy-community:moxy-compiler:2.2.2")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
 

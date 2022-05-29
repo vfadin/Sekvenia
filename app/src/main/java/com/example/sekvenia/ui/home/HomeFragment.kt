@@ -2,20 +2,19 @@ package com.example.sekvenia.ui.home
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.sekvenia.R
 import com.example.sekvenia.databinding.FragmentHomeBinding
 import kotlinx.coroutines.launch
+import moxy.MvpAppCompatFragment
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 
-class HomeFragment : Fragment(R.layout.fragment_home) {
+class HomeFragment : MvpAppCompatFragment(R.layout.fragment_home), IHomeView {
 
     private val TITLES_BEFORE_FILMS = 2
-    private val TITLES_BEFORE_GENRES = 1
     private var binding: FragmentHomeBinding? = null
     private lateinit var recyclerViewAdapter: HomeRecyclerViewAdapter
 
@@ -32,7 +31,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
-    private fun bindUi() {
+    override fun bindUi() {
         binding?.apply {
             with(recyclerViewHomeFilms) {
                 val layoutManager = GridLayoutManager(requireContext(), 2)
@@ -51,9 +50,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                         position -
                                                 TITLES_BEFORE_FILMS -
                                                 recyclerViewAdapter.getGenresCount()
-                                    )?.let {
-                                        it.localized_name
-                                    }
+                                    )?.localized_name
                                 )
                                 findNavController().navigate(
                                     R.id.action_homeFragment_to_detailedFilmFragment,
@@ -61,7 +58,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                 )
                             }
                             R.layout.item_home_genre -> {
-                                recyclerViewAdapter.setGenreFilter(position - TITLES_BEFORE_GENRES)
+                                recyclerViewAdapter.setGenreFilter(position)
                             }
                         }
                     }

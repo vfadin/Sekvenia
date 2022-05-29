@@ -15,13 +15,14 @@ class HomeRecyclerViewAdapter(
     private val layoutManager: GridLayoutManager
 ) : RecyclerView.Adapter<HomeRecyclerViewHolder>() {
 
+    private val TITLES_BEFORE_GENRES = 1
     private var dataList = mutableListOf<HomeRecyclerViewItem>()
     private var filmList = mutableListOf<Film>()
-    private var filtredFilmList = mutableListOf<Film>()
+    private var filteredFilmList = mutableListOf<Film>()
+    private var selectedGenrePosition = -1
     private var genreSet = mutableSetOf<String>()
-    private var genreSelectSet = mutableSetOf<Int>()
     private lateinit var listener: OnItemClickListener
-    lateinit var diffUtils: HomeDiffUtils
+    private lateinit var diffUtils: HomeDiffUtils
 
     interface OnItemClickListener {
         fun onItemClick(position: Int, viewType: Int)
@@ -31,21 +32,28 @@ class HomeRecyclerViewAdapter(
         this.listener = listener
     }
 
-    fun getFilmName(position: Int) = filtredFilmList.getOrNull(position)
-    
+    fun getFilmName(position: Int) = filteredFilmList.getOrNull(position)
 
     fun getGenresCount() = genreSet.size
 
+    private fun redrawPrevSelectedGenre(position: Int) {
+        selectedGenrePosition = if (selectedGenrePosition == -1) {
+            position
+        } else {
+            notifyItemChanged(selectedGenrePosition)
+            position
+        }
+    }
+
     fun setGenreFilter(position: Int) {
-        genreSelectSet.add(position + 1)
-        filtredFilmList.clear()
-        println(genreSet.elementAtOrNull(position))
+        redrawPrevSelectedGenre(position)
+        filteredFilmList.clear()
         filmList.map { film ->
-            if (film.genres.contains(genreSet.elementAtOrNull(position))) {
-                filtredFilmList.add(film)
+            if (film.genres.contains(genreSet.elementAtOrNull(position - TITLES_BEFORE_GENRES))) {
+                filteredFilmList.add(film)
             }
         }
-        formDataList(filtredFilmList)
+        formDataList(filteredFilmList)
     }
 
     private fun formDataList(dataList: List<Film>) {
@@ -69,7 +77,7 @@ class HomeRecyclerViewAdapter(
     fun setUpdatedData(dataList: List<Film>) {
         dataList.map {
             filmList.add(it)
-            filtredFilmList.add(it)
+            filteredFilmList.add(it)
             genreSet.addAll(it.genres)
         }
         formDataList(dataList)
@@ -115,13 +123,6 @@ class HomeRecyclerViewAdapter(
                     dataList[position] as HomeRecyclerViewItem.ItemGenre,
                     listener
                 )
-                if (genreSelectSet.size > 1) {
-                    holder.setDefaultBackground(
-                        dataList[genreSelectSet.elementAt(0)]
-                                as HomeRecyclerViewItem.ItemGenre
-                    )
-                    genreSelectSet.clear()
-                }
             }
             is HomeRecyclerViewHolder.FilmViewHolder ->
                 holder.bind(dataList[position] as HomeRecyclerViewItem.ItemFilm, listener)
