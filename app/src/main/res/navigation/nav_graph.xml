@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/detailedFilmFragment"
-        android:name="com.example.sekvenia.ui.home.DetailedFilmFragment"
+        android:name="com.example.sekvenia.ui.home.detailedfilm.DetailedFilmFragment"
         android:label="fragment_detailed_film"
         tools:layout="@layout/fragment_detailed_film" />
 </navigation>

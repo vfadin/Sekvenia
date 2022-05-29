@@ -1,7 +1,6 @@
 package com.example.sekvenia.ui.home
 
 import androidx.recyclerview.widget.DiffUtil
-import com.example.sekvenia.domain.entity.Film
 import com.example.sekvenia.domain.entity.HomeRecyclerViewItem
 
 class HomeDiffUtils(

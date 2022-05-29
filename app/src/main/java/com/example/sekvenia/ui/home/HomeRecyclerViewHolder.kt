@@ -4,7 +4,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import coil.load
-import coil.size.Scale
 import com.example.sekvenia.R
 import com.example.sekvenia.databinding.ItemHomeFilmBinding
 import com.example.sekvenia.databinding.ItemHomeGenreBinding

@@ -1,15 +1,14 @@
-package com.example.sekvenia.ui.home
+package com.example.sekvenia.ui.home.detailedfilm
 
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.coroutineScope
 import coil.load
 import com.example.sekvenia.R
 import com.example.sekvenia.databinding.FragmentDetailedFilmBinding
 import com.example.sekvenia.domain.entity.Film
-import kotlinx.coroutines.launch
+import com.example.sekvenia.ui.home.HomePresenter
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 
