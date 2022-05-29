@@ -8,7 +8,9 @@ import com.example.sekvenia.domain.repo.IHomeRepo
 class HomeRepo(
     private val dataSource: AmazonawsRemoteDataSource
 ) : IHomeRepo {
-    override suspend fun getFilms() : List<Film> {
-        return dataSource.getFilms().toListOfFilm()
+    override suspend fun getFilms() : List<Film>? {
+        return dataSource.getFilms().let {
+            it?.toListOfFilm()
+        }
     }
 }

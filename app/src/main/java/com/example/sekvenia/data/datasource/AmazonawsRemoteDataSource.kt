@@ -1,12 +1,12 @@
 package com.example.sekvenia.data.datasource
 
-import com.example.sekvenia.data.entity.ApiFilm
-import com.example.sekvenia.data.entity.ApiFilms
+import com.example.sekvenia.data.network.safeApiCall
+
 
 class AmazonawsRemoteDataSource(
     private val api: IAmazonawsService
 ) {
-    suspend fun getFilms() : ApiFilms {
-        return api.getFilms()
+    suspend fun getFilms() = safeApiCall {
+        api.getFilms()
     }
 }

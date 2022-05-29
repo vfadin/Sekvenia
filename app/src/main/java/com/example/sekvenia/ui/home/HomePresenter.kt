@@ -44,10 +44,10 @@ class HomePresenter(
         presenterScope.launch {
             filmList.clear()
             filteredFilmList.clear()
-            val result = homeRepo.getFilms().sortedBy {
+            val result = homeRepo.getFilms()?.sortedBy {
                 it.localized_name
             }
-            result.map { film ->
+            result?.map { film ->
                 filmList.add(film)
                 filteredFilmList.add(film)
                 film.genres.map {
