@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.homeFragment,
+                R.id.homeFragment
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)

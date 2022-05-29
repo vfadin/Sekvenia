@@ -9,6 +9,9 @@ import com.example.sekvenia.R
 import com.example.sekvenia.databinding.FragmentHomeBinding
 import kotlinx.coroutines.launch
 import moxy.MvpAppCompatFragment
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 
@@ -18,17 +21,35 @@ class HomeFragment : MvpAppCompatFragment(R.layout.fragment_home), IHomeView {
     private var binding: FragmentHomeBinding? = null
     private lateinit var recyclerViewAdapter: HomeRecyclerViewAdapter
 
-    private val presenter: HomePresenter by inject { parametersOf(this) }
+    @InjectPresenter
+    lateinit var presenter: HomePresenter
+
+    @ProvidePresenter
+    fun provide(): HomePresenter = get()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentHomeBinding.bind(view)
-        bindUi()
+    }
+
+    override fun setData() {
         viewLifecycleOwner.lifecycleScope.launch {
             presenter.filmStateFlow.collect {
-                recyclerViewAdapter.setUpdatedData(it)
+                recyclerViewAdapter.setUpdatedData(
+                    it,
+                    presenter.genreSet
+                )
             }
         }
+
+    }
+
+    override fun setGenreFilter(position: Int) {
+        recyclerViewAdapter.setGenreFilter(
+            position,
+            presenter.genreSet,
+            presenter.getFilteredFilmList(position)
+        )
     }
 
     override fun bindUi() {
@@ -44,13 +65,10 @@ class HomeFragment : MvpAppCompatFragment(R.layout.fragment_home), IHomeView {
                         when (viewType) {
                             R.layout.item_home_film -> {
                                 val bundle = Bundle()
-                                bundle.putString(
+                                bundle.putInt(
                                     "localized_name",
-                                    recyclerViewAdapter.getFilmName(
-                                        position -
-                                                TITLES_BEFORE_FILMS -
-                                                recyclerViewAdapter.getGenresCount()
-                                    )?.localized_name
+                                    position - TITLES_BEFORE_FILMS -
+                                            presenter.genreSet.size
                                 )
                                 findNavController().navigate(
                                     R.id.action_homeFragment_to_detailedFilmFragment,
@@ -58,12 +76,13 @@ class HomeFragment : MvpAppCompatFragment(R.layout.fragment_home), IHomeView {
                                 )
                             }
                             R.layout.item_home_genre -> {
-                                recyclerViewAdapter.setGenreFilter(position)
+                                setGenreFilter(position)
                             }
                         }
                     }
                 })
             }
         }
+        setData()
     }
 }

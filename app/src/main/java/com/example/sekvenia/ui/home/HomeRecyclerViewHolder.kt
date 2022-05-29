@@ -28,8 +28,7 @@ sealed class HomeRecyclerViewHolder(binding: ViewBinding) : RecyclerView.ViewHol
         ) {
             binding.textViewLocalizedName.text = film.title
             binding.imageViewPoster.load(film.imageUrl) {
-                placeholder(R.drawable.ic_launcher_foreground)
-                scale(Scale.FILL)
+                error(R.drawable.ph)
             }
             itemView.setOnClickListener {
                 listener.onItemClick(adapterPosition, R.layout.item_home_film)
@@ -40,7 +39,7 @@ sealed class HomeRecyclerViewHolder(binding: ViewBinding) : RecyclerView.ViewHol
     class GenreViewHolder(private val binding: ItemHomeGenreBinding) :
         HomeRecyclerViewHolder(binding) {
 
-        private fun setSelectedBackground() {
+        fun setSelectedBackground() {
             with(binding) {
                 with(cardView) {
                     isSelected = true

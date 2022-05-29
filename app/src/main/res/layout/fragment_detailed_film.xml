@@ -8,10 +8,14 @@
 
     <TextView
         android:id="@+id/textView_detailed_film_title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:gravity="start"
         android:text="@string/title"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/imageView_detailed_film_poster"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -19,8 +23,8 @@
         android:id="@+id/textView_detailed_film_year"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/year"
         android:layout_margin="16dp"
+        android:text="@string/year"
         app:layout_constraintStart_toEndOf="@id/imageView_detailed_film_poster"
         app:layout_constraintTop_toBottomOf="@id/textView_detailed_film_title" />
 
@@ -37,8 +41,8 @@
         android:id="@+id/textView_detailed_film_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/description"
         android:layout_margin="16dp"
+        android:text="@string/description"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imageView_detailed_film_poster" />
 

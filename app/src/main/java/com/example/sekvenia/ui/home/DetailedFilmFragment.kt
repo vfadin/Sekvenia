@@ -20,18 +20,10 @@ class DetailedFilmFragment : Fragment(R.layout.fragment_detailed_film) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val filmName = arguments?.getString("localized_name") ?: ""
-        println(filmName)
+        val filmName = arguments?.getInt("localized_name") ?: 0
         binding = FragmentDetailedFilmBinding.bind(view)
-        viewLifecycleOwner.lifecycle.coroutineScope.launch {
-            presenter.filmStateFlow.collect { list ->
-                list.find {
-                    it.localized_name == filmName
-                }?.let {
-
-                    bindUi(it)
-                }
-            }
+        presenter.filteredFilmList.getOrNull(filmName)?.let {
+            bindUi(it)
         }
     }
 
@@ -42,7 +34,9 @@ class DetailedFilmFragment : Fragment(R.layout.fragment_detailed_film) {
                 textViewDetailedFilmDescription.text = description
                 textViewDetailedFilmRating.text = getString(R.string.rating, rating.toString())
                 textViewDetailedFilmYear.text = getString(R.string.year, year.toString())
-                imageViewDetailedFilmPoster.load(image_url)
+                imageViewDetailedFilmPoster.load(image_url) {
+                    error(R.drawable.ph)
+                }
                 (requireActivity() as AppCompatActivity).supportActionBar?.title = localized_name
             }
         }
