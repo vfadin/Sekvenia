@@ -2,92 +2,85 @@ package com.example.sekvenia.ui.home
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.sekvenia.R
 import com.example.sekvenia.databinding.FragmentHomeBinding
 import kotlinx.coroutines.launch
-import moxy.MvpAppCompatFragment
-import moxy.presenter.InjectPresenter
-import moxy.presenter.ProvidePresenter
-import org.koin.android.ext.android.get
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class HomeFragment : MvpAppCompatFragment(R.layout.fragment_home), IHomeView {
+class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private val TITLES_BEFORE_FILMS = 2
     private var binding: FragmentHomeBinding? = null
     private lateinit var recyclerViewAdapter: HomeRecyclerViewAdapter
-
-    @InjectPresenter
-    lateinit var presenter: HomePresenter
-
-    @ProvidePresenter
-    fun provide(): HomePresenter = get()
+    private val model: HomeViewModel by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentHomeBinding.bind(view)
+        bindUi()
+        setData()
     }
 
-    override fun setData() {
+    private fun setData() {
         viewLifecycleOwner.lifecycleScope.launch {
-            presenter.requestStateFlow.collect {
-                recyclerViewAdapter.setUpdatedData(
-                    presenter.filteredFilmList,
-                    presenter.genreSet
-                )
+            model.filmsStateFlow.collect {
+                recyclerViewAdapter.setUpdatedData(it)
             }
         }
     }
 
-    override fun setGenreFilter(position: Int) {
-        recyclerViewAdapter.setGenreFilter(
-            position,
-            presenter.genreSet,
-            presenter.getFilteredFilmList(position)
-        )
+    fun setGenreFilter(position: Int) {
+        model.getFilteredFilmList(position)
     }
 
-    override fun bindUi() {
+    private fun bindUi() {
         binding?.apply {
             with(recyclerViewHomeFilms) {
                 val layoutManager = GridLayoutManager(requireContext(), 2)
                 recyclerViewAdapter = HomeRecyclerViewAdapter(layoutManager)
                 adapter = recyclerViewAdapter
-                recyclerViewAdapter.selectedGenrePosition = presenter.genreSelected
+//                recyclerViewAdapter.selectedGenrePosition = presenter.genreSelected
                 this.layoutManager = layoutManager
                 recyclerViewAdapter.setOnItemClickListener(object :
                     HomeRecyclerViewAdapter.OnItemClickListener {
-                    override fun onItemClick(position: Int, viewType: Int) {
+                    override fun onItemClick(id: Int, viewType: Int) {
                         when (viewType) {
                             R.layout.item_home_film -> {
                                 val bundle = Bundle()
-                                bundle.putInt(
-                                    "localized_name",
-                                    position - TITLES_BEFORE_FILMS -
-                                            presenter.genreSet.size
-                                )
+                                bundle.putInt("id", id)
                                 findNavController().navigate(
                                     R.id.action_homeFragment_to_detailedFilmFragment,
                                     bundle
                                 )
                             }
                             R.layout.item_home_genre -> {
-                                setGenreFilter(position)
+                                setGenreFilter(id)
                             }
                         }
                     }
                 })
             }
             swipeRefreshLayoutHome.setOnRefreshListener {
-                presenter.getFilms()
-                recyclerViewAdapter.redrawPrevSelectedGenre(presenter.genreSelected)
-                presenter.genreSelected = -1
+                model.getFilms()
+//                recyclerViewAdapter.redrawPrevSelectedGenre(presenter.genreSelected)
+//                presenter.genreSelected = -1
                 recyclerViewAdapter.selectedGenrePosition = -1
                 swipeRefreshLayoutHome.isRefreshing = false
             }
         }
-        setData()
+    }
+    private fun setSpanCount(layoutManager: GridLayoutManager) {
+        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                if (position < 13 + 2) {
+                    return 2
+                }
+                return 1
+            }
+        }
     }
 }

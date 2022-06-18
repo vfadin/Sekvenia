@@ -30,7 +30,7 @@ sealed class HomeRecyclerViewHolder(binding: ViewBinding) : RecyclerView.ViewHol
                 error(R.drawable.ph)
             }
             itemView.setOnClickListener {
-                listener.onItemClick(adapterPosition, R.layout.item_home_film)
+                listener.onItemClick(film.id, R.layout.item_home_film)
             }
         }
     }

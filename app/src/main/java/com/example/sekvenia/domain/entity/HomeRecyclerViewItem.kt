@@ -7,6 +7,7 @@ sealed class HomeRecyclerViewItem {
     ) : HomeRecyclerViewItem()
 
     data class ItemFilm(
+        val id: Int,
         val title: String,
         val imageUrl: String
     ) : HomeRecyclerViewItem()
@@ -19,6 +20,7 @@ sealed class HomeRecyclerViewItem {
 
 
 fun Film.toHomeRecyclerViewItemFilm() = HomeRecyclerViewItem.ItemFilm(
+    id = this.id,
     title = this.localized_name,
     imageUrl = this.image_url
 )

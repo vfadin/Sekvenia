@@ -7,7 +7,8 @@ import com.example.sekvenia.data.remote.network.Network
 import com.example.sekvenia.data.remote.network.SupportInterceptor
 import com.example.sekvenia.data.repo.HomeRepo
 import com.example.sekvenia.domain.repo.IHomeRepo
-import com.example.sekvenia.ui.home.HomePresenter
+import com.example.sekvenia.ui.home.HomeViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -23,9 +24,12 @@ val remoteModule = module {
 
 val repositoryModule = module {
     single<IHomeRepo> { HomeRepo(get()) }
-    single { HomePresenter(get()) }
+}
+
+val viewModelModules = module {
+    viewModel { HomeViewModel(get()) }
 }
 
 fun getModules(): List<Module> {
-    return listOf(networkModule, remoteModule, repositoryModule)
+    return listOf(networkModule, remoteModule, repositoryModule, viewModelModules)
 }
