@@ -2,13 +2,11 @@ package com.example.sekvenia.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.sekvenia.R
 import com.example.sekvenia.domain.entity.*
 import com.example.sekvenia.domain.repo.IHomeRepo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
@@ -22,8 +20,7 @@ class HomeViewModel(
     val detailedFilmStateFlow = _detailedFilmState.asStateFlow().filterNotNull()
 
     private val filmList = mutableListOf<Film>()
-    val genreSet = mutableSetOf<String>()
-    var genreSelected: Int = -1
+    private val genreSet = mutableSetOf<String>()
 
     init {
         getFilms()
@@ -32,6 +29,7 @@ class HomeViewModel(
     fun getFilms() {
         viewModelScope.launch {
             genreSet.clear()
+            filmList.clear()
             homeRepo.getFilms()?.sortedBy {
                 it.localized_name
             }?.map { film ->
@@ -61,8 +59,7 @@ class HomeViewModel(
     }
 
     fun getFilteredFilmList(position: Int) {
-        genreSelected = position
-        var result = mutableListOf<Film>()
+        val result = mutableListOf<Film>()
         filmList.map { film ->
             if (film.genres.contains(genreSet.elementAtOrNull(position - 1))) {
                 result.add(film)

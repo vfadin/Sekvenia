@@ -13,10 +13,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
-    private val TITLES_BEFORE_FILMS = 2
     private var binding: FragmentHomeBinding? = null
-    private lateinit var recyclerViewAdapter: HomeRecyclerViewAdapter
+    private val recyclerViewAdapter = HomeRecyclerViewAdapter()
     private val model: HomeViewModel by viewModel()
+    private var positionOfSelectedGenre = -1
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -35,15 +35,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     fun setGenreFilter(position: Int) {
         model.getFilteredFilmList(position)
+        recyclerViewAdapter.redrawPrevSelectedGenre(position)
     }
 
     private fun bindUi() {
         binding?.apply {
             with(recyclerViewHomeFilms) {
                 val layoutManager = GridLayoutManager(requireContext(), 2)
-                recyclerViewAdapter = HomeRecyclerViewAdapter(layoutManager)
                 adapter = recyclerViewAdapter
-//                recyclerViewAdapter.selectedGenrePosition = presenter.genreSelected
+                setSpanCount(layoutManager)
                 this.layoutManager = layoutManager
                 recyclerViewAdapter.setOnItemClickListener(object :
                     HomeRecyclerViewAdapter.OnItemClickListener {
@@ -66,8 +66,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
             swipeRefreshLayoutHome.setOnRefreshListener {
                 model.getFilms()
-//                recyclerViewAdapter.redrawPrevSelectedGenre(presenter.genreSelected)
-//                presenter.genreSelected = -1
+                recyclerViewAdapter.redrawPrevSelectedGenre(positionOfSelectedGenre)
+                positionOfSelectedGenre = -1
                 recyclerViewAdapter.selectedGenrePosition = -1
                 swipeRefreshLayoutHome.isRefreshing = false
             }
@@ -76,10 +76,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private fun setSpanCount(layoutManager: GridLayoutManager) {
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                if (position < 13 + 2) {
-                    return 2
+                return when(recyclerViewAdapter.getItemViewType(position)) {
+                    R.layout.item_home_film -> 1
+                    else -> 2
                 }
-                return 1
             }
         }
     }

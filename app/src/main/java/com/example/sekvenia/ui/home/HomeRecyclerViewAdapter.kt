@@ -3,23 +3,20 @@ package com.example.sekvenia.ui.home
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sekvenia.R
 import com.example.sekvenia.databinding.ItemHomeFilmBinding
 import com.example.sekvenia.databinding.ItemHomeGenreBinding
 import com.example.sekvenia.databinding.ItemHomeTitleBinding
-import com.example.sekvenia.domain.entity.*
+import com.example.sekvenia.domain.entity.HomeRecyclerViewItem
 
-class HomeRecyclerViewAdapter(
-    private val layoutManager: GridLayoutManager
-) : RecyclerView.Adapter<HomeRecyclerViewHolder>() {
+class HomeRecyclerViewAdapter :
+    RecyclerView.Adapter<HomeRecyclerViewHolder>() {
 
     private var dataList = mutableListOf<HomeRecyclerViewItem>()
     var selectedGenrePosition = -1
     private lateinit var listener: OnItemClickListener
     private lateinit var diffUtils: HomeDiffUtils
-    private var genresCount = 0
 
     interface OnItemClickListener {
         fun onItemClick(id: Int, viewType: Int)
@@ -38,11 +35,6 @@ class HomeRecyclerViewAdapter(
         }
     }
 
-    fun setGenreFilter(position: Int, genreSet: Set<String>, filteredFilmList: List<Film>) {
-        redrawPrevSelectedGenre(position)
-//        formDataList(filteredFilmList, genreSet)
-    }
-
     private fun formDataList(newDataList: List<HomeRecyclerViewItem>) {
         diffUtils = HomeDiffUtils(dataList, newDataList)
         val diffResult: DiffUtil.DiffResult = DiffUtil.calculateDiff(diffUtils)
@@ -53,7 +45,6 @@ class HomeRecyclerViewAdapter(
 
     fun setUpdatedData(dataList: List<HomeRecyclerViewItem>) {
         formDataList(dataList)
-        genresCount = 13
     }
 
     override fun onCreateViewHolder(
@@ -100,7 +91,10 @@ class HomeRecyclerViewAdapter(
                 }
             }
             is HomeRecyclerViewHolder.FilmViewHolder ->
-                holder.bind(dataList[position] as HomeRecyclerViewItem.ItemFilm, listener)
+                holder.bind(
+                    dataList[position] as HomeRecyclerViewItem.ItemFilm,
+                    listener
+                )
             is HomeRecyclerViewHolder.TitleViewHolder ->
                 holder.bind(dataList[position] as HomeRecyclerViewItem.ItemTitle)
         }
